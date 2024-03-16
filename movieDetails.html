@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        p {
+            color: #666;
+        } */
+
+        .container {
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .title {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 24px;
+            font-weight: lighter;
+            margin-bottom: 20px;
+        }
+
+        .poster {
+            width: 300px;
+            float: left;
+            margin-right: 20px;
+        }
+
+        .info {
+            float: left;
+        }
+
+        .release-date {
+            margin-bottom: 10px;
+        }
+
+        .genres {
+            margin-bottom: 10px;
+        }
+
+        .runtime {
+            margin-bottom: 10px;
+        }
+
+        .score {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .overview {
+            margin-bottom: 20px;
+        }
+
+        .cast {
+            margin-bottom: 20px;
+        }
+
+        .director {
+            margin-bottom: 5px;
+        }
+
+        .writer {
+            margin-bottom: 5px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+        }
+
+        .now-streaming {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .watch-now-button {
+            display: block;
+            margin: 0 auto;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+        }
+
+        .btn1 {
+            background-color: #1273c2;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn2 {
+            background-color: #1273c2;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn3 {
+            background-color: #3cc430;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 id="title"></h1>
+        <div id="movieDetails"></div>
+    </div>
+
+    <script>
+
+        function saveHistory (id, title, type, poster_path, username) {
+            
+            const item = {
+                id: id,
+                title: title,
+                type: type,
+                poster_path: poster_path
+            }
+            
+            if (localStorage.getItem(`${username}'s_history`)) {
+                const userHistory = JSON.parse(localStorage.getItem(`${username}'s_history`));
+                
+                userHistory.push(item);
+                localStorage.setItem(`${username}'s_history`, JSON.stringify(userHistory));
+                
+            }
+            else {
+                const userHistory = [item]
+                localStorage.setItem(`${username}'s_history`, JSON.stringify(userHistory));
+                console.log("history added");
+            }
+
+        }
+
+        function openPlayer(id, type, server) {
+            if (type === 'movie') {
+                server === 'server1' ?
+                    window.open(`https://vidsrc.to/embed/movie/${id}`, '_blank')
+                    :
+                    window.open(`https://multiembed.mov/?video_id=${id}&tmdb=1`, '_blank')
+            }
+            else {
+                // 'https://vidsrc.to/embed/tv/{id}/{season}/{episode}'
+                server === 'server1' ?
+                    window.open(`https://vidsrc.to/embed/tv/${id}/1/1`, '_blank')
+                    :
+                    window.open(`https://multiembed.mov/?video_id=${id}&tmdb=1&s=1&e=1`, '_blank')
+            }
+        }
+
+        function getTime(time) {
+            let hours = Math.floor(time / 60);
+            let min = time % 60;
+            return `${hours}h ${min}min`;
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            const id = urlParams.get('id');
+            const type = urlParams.get('type');
+            const username = urlParams.get('user');
+            console.log(username);
+
+            if (type === 'movie') {
+                document.getElementById('title').innerText = 'Movie Details';
+            } else {
+                document.getElementById('title').innerText = 'TV Show Details';
+            }
+            fetchDetails(id, type, username);
+        });
+
+        async function fetchDetails(id, type, username) {
+            const apiKey = '11543838fce02f393c7aab50001e3a07';
+            const response = await fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${apiKey}`);
+            const data = await response.json();
+            console.log(data);
+            const movieDetailsElement = document.getElementById('movieDetails');
+            movieDetailsElement.innerHTML = `
+            <div class="header">
+                <img src='https://image.tmdb.org/t/p/w200${data.poster_path}' alt='${data.title || data.name}' class="poster">
+                <div class="info">
+                    <h1 class="title">${data.title || data.name}</h1>
+                    <p class="release-date">Release date: ${data.release_date || data.first_air_date}</p>
+                    <p class="genres">Genres: ${data.genres.map(genre => genre.name)}</p>
+                    <p class="runtime">Runtime: ${getTime(data.runtime)}</p>
+                    <p class="overview">Description: ${data.overview}</p>
+                    <div>
+                        <button class="btn1" onclick="openPlayer('${id}', '${type}', '${'server1'}')">Watch Server1</button>
+                        <button class="btn2" onclick="openPlayer('${id}', '${type}', '${'server2'}')">Watch Server2</button>
+                        <button class="btn3" onclick="saveHistory('${id}', '${data.original_title || data.name}' , '${type}', '${data.poster_path}', '${username}' )">Save</button>
+                    </div>
+                </div>
+                
+            </div>
+            `;
+        }
+    </script>
+</body>
+
+</html>
+
+<!-- <img src='https://image.tmdb.org/t/p/w200${data.poster_path}' alt='${data.title || data.name}' />
+<h2>${data.title || data.name}</h2>
+<p><strong>Overview:</strong> ${data.overview}</p>
+<p><strong>Release Date:</strong> ${data.release_date || data.first_air_date}</p>
+<p><strong>Rating:</strong> ${data.vote_average}</p>
+<p><strong>Vote Count:</strong> ${data.vote_count}</p>
+<p><strong>Popularity:</strong> ${data.popularity}</p> -->

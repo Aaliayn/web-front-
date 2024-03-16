@@ -1,0 +1,34 @@
+body {
+    background-color: black;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+#loginForm, #buttons {
+    text-align: center;
+    margin: 20px;
+}
+
+button {
+    padding: 10px;
+    margin: 5px;
+    cursor: pointer;
+}
+
+#mainContent {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+#mainContent div {
+    margin: 10px;
+    text-align: center;
+    cursor: pointer;
+}
+
+#mainContent img {
+    max-width: 200px;
+    max-height: 300px;
+}
+

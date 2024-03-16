@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add User</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .signup-form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+       
+    </style>
+</head>
+
+<body>
+    <div class="signup-form">
+        <h2>Signup</h2>
+        <!-- <form method="post"> -->
+            <div class="form-group">
+                <label for="firstName">First Name:</label>
+                <input type="text" id="firstName" name="firstName" required>
+            </div>
+            <div class="form-group">
+                <label for="lastName">Last Name:</label>
+                <input type="text" id="lastName" name="lastName" required>
+            </div>
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button onclick="signUp()" >Sign Up</button>
+        <!-- </form> -->
+    </div>
+
+    <script>
+        // const username = document.getElementById('username').value;
+        // const password = document.getElementById('password').value;
+        // const rememberMeCheckbox = document.getElementById('rememberMe');
+
+        const signUp = async () => {
+
+            const data = {
+                first_name: document.getElementById('firstName').value,
+                last_name: document.getElementById('lastName').value,
+                username: document.getElementById('username').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value
+            }
+            
+            try {
+                const res = await fetch('http://localhost:5000/api/user/signup', {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                })
+                const user = await res.json();
+                console.log(user.message);
+                
+                if (user) {
+                    alert(user.message)
+                    // const userData = parseJwt(user.token);
+        
+                    // document.getElementById('addNewUserButton').style.display = 'flex';
+                    // isLoggedIn = true;
+                    // currentUsername = userData.user.username;
+                    
+                    // localStorage.setItem('user', JSON.stringify({ username: userData.user.username, token: user.token }));
+                    // document.getElementById('loginForm').style.display = 'none';
+                    // document.getElementById('buttons').style.display = 'flex';
+                    // const movieData = await fetchMovies();
+                    // displayContent(movieData, 'movie');
+        
+                    // const userDetails = JSON.parse(localStorage.getItem('user'))
+                    // console.log(userDetails);
+                }
+            } catch (error) {
+                console.log('error', error.message);
+            }
+        }
+        
+    </script>
+</body>
+
+</html>
